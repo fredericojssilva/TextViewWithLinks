@@ -4,7 +4,7 @@ TextViewWithLinks
 TextView With Link handler
 
 ##Usage
-```
+``` java
 String text = "bananas on www.bananas.ba and  <a href=\"http://google.com/\">Google</a>";
 
 TextViewWithLinks textview = new TextViewWithLinks(this);
