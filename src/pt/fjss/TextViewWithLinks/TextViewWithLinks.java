@@ -2,13 +2,12 @@ package pt.fjss.TextViewWithLinks;
 
 import android.content.Context;
 import android.graphics.Color;
-
 import android.text.Selection;
 import android.text.Spannable;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
-
+import android.util.AttributeSet;
 import android.widget.TextView;
 
 public class TextViewWithLinks extends TextView {
@@ -20,6 +19,14 @@ public class TextViewWithLinks extends TextView {
 	public TextViewWithLinks(Context context) {
 		super(context);
 		
+	}
+
+	public TextViewWithLinks(Context context, AttributeSet attrs) {
+		super(context, attrs);
+	}
+
+	public TextViewWithLinks(Context context, AttributeSet attrs, int defStyle) {
+		super(context, attrs, defStyle);
 	}
 
 	public void linkify(final OnClickLinksListener listener) {
