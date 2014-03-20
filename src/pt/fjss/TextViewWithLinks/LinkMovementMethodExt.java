@@ -1,14 +1,18 @@
 package pt.fjss.TextViewWithLinks;
 
+import java.io.Serializable;
+
 import android.text.Layout;
 import android.text.Selection;
 import android.text.Spannable;
 import android.text.method.LinkMovementMethod;
 import android.text.method.MovementMethod;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.TextView;
 
-public class LinkMovementMethodExt extends LinkMovementMethod {
+public class LinkMovementMethodExt extends LinkMovementMethod{
+
 	private static LinkMovementMethod sInstance;
 
 	private Class spanClass = null;
@@ -28,10 +32,15 @@ public class LinkMovementMethodExt extends LinkMovementMethod {
 	@Override
 	public boolean onTouchEvent(TextView widget, Spannable buffer, MotionEvent event) {
 		int action = event.getAction();
+		
+		int mDownX = 0, mDownY = 0;
 
 		if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_DOWN) {
 			int x = (int) event.getX();
 			int y = (int) event.getY();
+			
+			mDownX = x;
+			mDownY = y;
 
 			x -= widget.getTotalPaddingLeft();
 			y -= widget.getTotalPaddingTop();
@@ -59,16 +68,25 @@ public class LinkMovementMethodExt extends LinkMovementMethod {
 				} else if (action == MotionEvent.ACTION_UP) {
 					MessageSpan obj = new MessageSpan();
 					obj.setView(widget);
-
+					obj.setObj(spans);
+					Log.d("FRED","ActionUp");
 					listener.onKeyUpOnLink(obj);
 					return true;
 				}
+				
+				
 			} else {
 				if (action == MotionEvent.ACTION_UP) {
 
 					listener.onKeyDownOnTextView();
 				}
+				
 			}
+		}
+		else
+		{
+			if (Math.abs(mDownY - event.getY()) > 100)
+			listener.onScroll(widget);
 		}
 
 		return super.onTouchEvent(widget, buffer, event);
@@ -80,5 +98,7 @@ public class LinkMovementMethodExt extends LinkMovementMethod {
 		void onKeyUpOnLink(MessageSpan msg);
 
 		void onKeyDownOnTextView();
+		
+		void onScroll(TextView widget);
 	}
 }

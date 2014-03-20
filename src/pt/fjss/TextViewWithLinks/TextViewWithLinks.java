@@ -1,5 +1,7 @@
 package pt.fjss.TextViewWithLinks;
 
+import java.io.Serializable;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.text.Selection;
@@ -8,17 +10,20 @@ import android.text.style.BackgroundColorSpan;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.TextView;
 
 public class TextViewWithLinks extends TextView {
 
 	private BackgroundColorSpan color = new BackgroundColorSpan(Color.GREEN);
 
-	OnClickLinksListener listener;
+	static OnClickLinksListener l;
+
+	private String link;
 
 	public TextViewWithLinks(Context context) {
 		super(context);
-		
+
 	}
 
 	public TextViewWithLinks(Context context, AttributeSet attrs) {
@@ -29,8 +34,8 @@ public class TextViewWithLinks extends TextView {
 		super(context, attrs, defStyle);
 	}
 
-	public void linkify(final OnClickLinksListener listener) {
-		this.listener = listener;
+	public void linkify(OnClickLinksListener listener) {
+		l = listener;
 
 		Linkify.addLinks(this, Linkify.WEB_URLS);
 
@@ -39,15 +44,30 @@ public class TextViewWithLinks extends TextView {
 			@Override
 			public void onKeyUpOnLink(MessageSpan msg) {
 				MessageSpan ms = msg;
+				Object[] spans = (Object[]) ms.getObj();
 				TextView view = ms.getView();
+
+				for (Object span : spans) {
+					if (span instanceof URLSpan) {
+						int start = Selection.getSelectionStart(view.getText());
+						int end = Selection.getSelectionEnd(view.getText());
+
+						Spannable _span = (Spannable) view.getText();
+
+						l.onLinkClick(((URLSpan) span).getURL());
+					}
+
+				}
+
 				Spannable _span = (Spannable) view.getText();
 				_span.removeSpan(color);
 				view.setText(_span);
+
 			}
 
 			@Override
 			public void onKeyDownOnTextView() {
-				listener.onTextViewClick();
+				l.onTextViewClick();
 			}
 
 			@Override
@@ -62,19 +82,24 @@ public class TextViewWithLinks extends TextView {
 						int end = Selection.getSelectionEnd(view.getText());
 
 						Spannable _span = (Spannable) view.getText();
-						
+
 						_span.setSpan(color, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 						view.setText(_span);
-
-						listener.onLinkClick(((URLSpan) span).getURL());
 					}
 				}
 			}
+
+			@Override
+			public void onScroll(TextView widget) {
+				Spannable _span = (Spannable) widget.getText();
+				_span.removeSpan(color);
+				widget.setText(_span);
+
+			}
 		}, URLSpan.class));
 	}
-	
-	public void setLinkColors(int linkColor,int backgroundLinkColor)
-	{
+
+	public void setLinkColors(int linkColor, int backgroundLinkColor) {
 		color = new BackgroundColorSpan(backgroundLinkColor);
 		this.setLinkTextColor(linkColor);
 	}

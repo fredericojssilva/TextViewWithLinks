@@ -1,8 +1,14 @@
 package pt.fjss.TextViewWithLinks;
 
+import java.io.Serializable;
+
 import android.widget.TextView;
 
-public class MessageSpan {
+public class MessageSpan implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7514309961937880617L;
 	Object obj;
 	private TextView view;
 
